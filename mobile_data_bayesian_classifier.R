@@ -1,0 +1,26 @@
+# Load necessary libraries
+library(e1071)  # for Naive Bayes classifier
+library(gmodels) # for CrossTable
+
+# Load the dataset for Bayesian classifier
+mobile_data <- read.csv("train.csv")
+
+# Convert 'price_range' to a factor and ensure it has more than one level
+mobile_data$price_range <- as.factor(mobile_data$price_range)
+
+# Split the dataset into training and test sets
+set.seed(123)  # for reproducibility
+data_split_bayes <- sample(nrow(mobile_data) * 0.8)
+mobile_train_bayes <- mobile_data[data_split_bayes, ]
+mobile_test_bayes <- mobile_data[-data_split_bayes, ]
+
+# Bayesian Classifier
+mobile_bayes <- naiveBayes(price_range ~ battery_power + ram + int_memory, data = mobile_train_bayes)
+
+# Predict using the Bayesian classifier model
+mobile_pred_bayes <- predict(mobile_bayes, mobile_test_bayes)
+
+# Evaluate the Bayesian classifier model
+result_bayes <- CrossTable(mobile_test_bayes$price_range, mobile_pred_bayes, prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE, dnn = c('Actual Class', 'Predicted Class'))
+print(result_bayes)
+

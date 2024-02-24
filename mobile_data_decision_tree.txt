@@ -1,0 +1,48 @@
+# Load necessary libraries
+library('C50')
+library(gmodels)
+# Load the dataset for decision tree
+mobile_data <- read.csv("train.csv")
+# Convert 'price_range' to a factor and ensure it has more than one level
+mobile_data$price_range <- as.factor(mobile_data$price_range)
+# Split the dataset into training and test sets
+data_split_tree <- sample(nrow(mobile_data) * 0.8)
+mobile_train_tree <- mobile_data[data_split_tree, ]
+mobile_test_tree <- mobile_data[-data_split_tree, ]
+# Decision Tree
+mobile_tree <- C5.0(mobile_train_tree[, c("battery_power", "ram", "int_memory")], mobile_train_tree$price_range)
+# Print summary of the decision tree model components
+summary(mobile_tree)
+# Visualize the decision tree graphically
+plot(mobile_tree, main = 'Mobile Price Classification Decision Tree')
+# Predict using the decision tree model
+mobile_pred_tree <- predict(mobile_tree, mobile_test_tree)
+# Evaluate the decision tree model
+result_tree <- CrossTable(mobile_test_tree$price_range, mobile_pred_tree, prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE, dnn = c('Actual Class', 'Predicted Class'))
+print(result_tree)
+# Extract relevant information
+num_nodes <- mobile_tree$size
+num_leaves <- mobile_tree$leaves
+num_rules <- mobile_tree$rules
+max_depth <- mobile_tree$depth
+# Display the information
+cat("Number of Nodes:", num_nodes, "\n")
+cat("Number of Leaves:", num_leaves, "\n")
+cat("Number of Rules:", num_rules, "\n")
+cat("Maximum Depth:", max_depth, "\n")
+# Confusiion matrix
+conf_matrix <- table(Actual_Class = mobile_test_tree$price_range, Predicted_Class = mobile_pred_tree)
+# Display the confusion matrix
+print(conf_matrix)
+# Calculate Precision, Recall, and F1 Score
+precision <- diag(conf_matrix) / rowSums(conf_matrix)
+recall <- diag(conf_matrix) / colSums(conf_matrix)
+f1_score <- 2 * precision * recall / (precision + recall)
+# Calculate Accuracy
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+# Display the metrics
+cat("Accuracy:", accuracy, "\n")
+cat("Precision:", precision, "\n")
+cat("Recall:", recall, "\n")
+cat("F1 Score:", f1_score, "\n")
+savehistory("F:/UMS/SEM 7/KK04703 DATA MINING/Assignment_2/mobile_data_decision_tree.txt")

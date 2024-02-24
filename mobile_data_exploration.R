@@ -1,0 +1,30 @@
+# Install the 'readr' package
+install.packages("readr")
+
+# Load necessary libraries
+library(readr)
+
+# Load the dataset
+mobile_data <- read_csv("train.csv")
+
+# View structure of the dataset
+str(mobile_data)
+
+# Summary statistics
+summary(mobile_data)
+
+# Check for missing values
+sum(is.na(mobile_data))
+
+# Histogram for a numerical variable ('ram')
+hist(mobile_data$ram, main = "RAM Distribution", xlab = "RAM", col = "skyblue")
+
+# Bar plot for a categorical variable ('price_range')
+barplot(table(mobile_data$price_range), main = "Price Range Distribution", col = "lightgreen", xlab = "Price Range")
+
+# Scatter plot for two numerical variables ('battery_power' and 'price_range')
+plot(mobile_data$battery_power, mobile_data$price_range, main = "Battery Power vs Price Range", xlab = "Battery Power", ylab = "Price Range")
+
+# Box plot for a numerical variable across categories ('ram' across 'price_range')
+boxplot(ram ~ price_range, data = mobile_data, main = "RAM across Price Range", xlab = "Price Range", ylab = "RAM")
+
